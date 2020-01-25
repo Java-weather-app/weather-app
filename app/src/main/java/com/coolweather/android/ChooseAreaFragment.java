@@ -144,18 +144,17 @@ public class ChooseAreaFragment extends Fragment {
     }
     private void queryFromServer(String address, final String type){
         showProgressDialog();
-        HttpUtil.sendOkHttpRequests(address, new Callback() {
+        HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         closeProgressDialog();
-                        Toast.makeText(getContext(),"加载失败",Toast.LENGTH_SHORT).show();;
+                        Toast.makeText(getContext(),"加载失败",Toast.LENGTH_SHORT).show();
                     }
                 });
             }
-
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String  responseText = response.body().string();
