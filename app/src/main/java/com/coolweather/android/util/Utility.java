@@ -11,11 +11,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Utility {
-    public static boolean handleProvinceResponse(String responce){
+    public static boolean handleProvinceResponse(String response){
         //解析省级数据
-        if(!TextUtils.isEmpty(responce)){
+        if(!TextUtils.isEmpty(response)){
             try{
-                JSONArray allProvinces = new JSONArray(responce);
+                JSONArray allProvinces = new JSONArray(response);
                 for(int i = 0; i < allProvinces.length(); i++){
                     JSONObject provinceObject = allProvinces.getJSONObject(i);
                     Province province = new Province();
@@ -31,11 +31,11 @@ public class Utility {
         }
         return false;
     }
-    public static boolean handleCityResponse(String responce, int provinceId){
+    public static boolean handleCityResponse(String response, int provinceId){
         //解析市级数据
-        if(!TextUtils.isEmpty(responce)){
+        if(!TextUtils.isEmpty(response)){
             try{
-                JSONArray allCities = new JSONArray(responce);
+                JSONArray allCities = new JSONArray(response);
                 for(int i = 0; i < allCities.length(); i++){
                     JSONObject cityObject = allCities.getJSONObject(i);
                     City city = new City();
@@ -52,11 +52,11 @@ public class Utility {
         }
         return false;
     }
-    public static boolean handleCountyResponse(String responce, int cityId){
+    public static boolean handleCountyResponse(String response, int cityId){
         //解析市级数据
-        if(!TextUtils.isEmpty(responce)){
+        if(!TextUtils.isEmpty(response)){
             try{
-                JSONArray allCounties = new JSONArray(responce);
+                JSONArray allCounties = new JSONArray(response);
                 for(int i = 0; i < allCounties.length(); i++){
                     JSONObject countyObject = allCounties.getJSONObject(i);
                     County county = new County();
@@ -74,3 +74,4 @@ public class Utility {
         return false;
     }
 }
+
