@@ -106,6 +106,10 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
     }
+    public void newrequestWeather(final String weatherId){
+        
+
+    }
     public void requestWeather(final String weatherId){
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId +
                 "&key=bc0418b57b2d4918819d3974ac1825d9";
