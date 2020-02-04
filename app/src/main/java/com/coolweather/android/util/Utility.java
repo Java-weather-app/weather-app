@@ -86,5 +86,16 @@ public class Utility {
         }
         return null;
     }
+    public static Weather newhandleWeatherResponce(interfaces.heweather.com.interfacesmodule.bean.weather.Weather responce){
+        Weather weather = new Weather();
+        weather.status = responce.getStatus();
+        weather.basic.cityName = responce.getBasic().getLocation();
+        weather.basic.weatherId = responce.getBasic().getCid();
+        weather.basic.update.updateTime = responce.getUpdate().getLoc();
+        weather.now.temperature = responce.getNow().getTmp();
+        weather.now.more.info = responce.getNow().getCond_txt();
+        
+        return weather;
+    }
 }
 

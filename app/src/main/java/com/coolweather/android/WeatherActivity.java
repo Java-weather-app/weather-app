@@ -29,6 +29,8 @@ import com.coolweather.android.util.Utility;
 
 import java.io.IOException;
 
+import interfaces.heweather.com.interfacesmodule.bean.Code;
+import interfaces.heweather.com.interfacesmodule.view.HeWeather;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -106,11 +108,50 @@ public class WeatherActivity extends AppCompatActivity {
             }
         });
     }
-    public void newrequestWeather(final String weatherId){
-        
+    public void requestWeather(final String weatherId){
+        HeWeather.getWeather(WeatherActivity.this, weatherId, new HeWeather.OnResultWeatherDataListBeansListener() {
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WeatherActivity.this,"获取天气信息失败",
+                                Toast.LENGTH_SHORT).show();
+                        swipeRefresh.setRefreshing(false);
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess(final interfaces.heweather.com.interfacesmodule.bean.weather.Weather result) {
+                if ( Code.OK.getCode().equalsIgnoreCase(result.getStatus()) ){
+                    final Weather weather = Utility.newhandleWeatherResponce(result);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                                editor.putString("weather",result.toString());//不确定
+                                editor.apply();
+                                showWeatherInfo(weather);
+                        }
+                    });
+                }
+                else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(WeatherActivity.this, "获取天气信息失败",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                swipeRefresh.setRefreshing(false);
+            }
+        });
 
     }
-    public void requestWeather(final String weatherId){
+    public void oldrequestWeather(final String weatherId){
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId +
                 "&key=bc0418b57b2d4918819d3974ac1825d9";
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
