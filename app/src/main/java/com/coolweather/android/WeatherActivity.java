@@ -109,6 +109,7 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
     public void requestWeather(final String weatherId){
+        final interfaces.heweather.com.interfacesmodule.bean.weather.Weather[] result1 = new interfaces.heweather.com.interfacesmodule.bean.weather.Weather[1];
         HeWeather.getWeather(WeatherActivity.this, weatherId, new HeWeather.OnResultWeatherDataListBeansListener() {
             @Override
             public void onError(Throwable throwable) {
@@ -125,30 +126,32 @@ public class WeatherActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(final interfaces.heweather.com.interfacesmodule.bean.weather.Weather result) {
-                if ( Code.OK.getCode().equalsIgnoreCase(result.getStatus()) ){
-                    final Weather weather = Utility.newhandleWeatherResponce(result);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
-                                editor.putString("weather",result.toString());//不确定
-                                editor.apply();
-                                showWeatherInfo(weather);
-                        }
-                    });
-                }
+                if (Code.OK.getCode().equalsIgnoreCase(result.getStatus()))
+                    result1[0] = result;
                 else{
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败",
                                     Toast.LENGTH_SHORT).show();
+                            swipeRefresh.setRefreshing(false);
                         }
                     });
                 }
-                swipeRefresh.setRefreshing(false);
             }
         });
+        if(Code.OK.getCode().equalsIgnoreCase(result1[0].getStatus())){
+            final Weather weather = Utility.newhandleWeatherResponce(result1[0]);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(weather != null && "ok".equals(weather.status)){
+                        showWeatherInfo(weather);
+                    }
+                }
+            });
+
+        }
 
     }
     public void oldrequestWeather(final String weatherId){

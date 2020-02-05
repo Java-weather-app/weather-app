@@ -94,7 +94,7 @@ public class Utility {
         weather.basic.update.updateTime = responce.getUpdate().getLoc();
         weather.now.temperature = responce.getNow().getTmp();
         weather.now.more.info = responce.getNow().getCond_txt();
-        
+
         return weather;
     }
 }
