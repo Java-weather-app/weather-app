@@ -30,6 +30,7 @@ import com.coolweather.android.util.Utility;
 import java.io.IOException;
 
 import interfaces.heweather.com.interfacesmodule.bean.Code;
+import interfaces.heweather.com.interfacesmodule.bean.air.Air;
 import interfaces.heweather.com.interfacesmodule.view.HeWeather;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -109,7 +110,8 @@ public class WeatherActivity extends AppCompatActivity {
         });
     }
     public void requestWeather(final String weatherId){
-        final interfaces.heweather.com.interfacesmodule.bean.weather.Weather[] result1 = new interfaces.heweather.com.interfacesmodule.bean.weather.Weather[1];
+        final interfaces.heweather.com.interfacesmodule.bean.weather.Weather[] responce1 = new interfaces.heweather.com.interfacesmodule.bean.weather.Weather[1];
+        final Air[] responce2 = new Air[1];
         HeWeather.getWeather(WeatherActivity.this, weatherId, new HeWeather.OnResultWeatherDataListBeansListener() {
             @Override
             public void onError(Throwable throwable) {
@@ -125,9 +127,9 @@ public class WeatherActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onSuccess(final interfaces.heweather.com.interfacesmodule.bean.weather.Weather result) {
-                if (Code.OK.getCode().equalsIgnoreCase(result.getStatus()))
-                    result1[0] = result;
+            public void onSuccess(final interfaces.heweather.com.interfacesmodule.bean.weather.Weather weather) {
+                if (Code.OK.getCode().equalsIgnoreCase(weather.getStatus()))
+                    responce1[0] = weather;
                 else{
                     runOnUiThread(new Runnable() {
                         @Override
@@ -140,8 +142,38 @@ public class WeatherActivity extends AppCompatActivity {
                 }
             }
         });
-        if(Code.OK.getCode().equalsIgnoreCase(result1[0].getStatus())){
-            final Weather weather = Utility.newhandleWeatherResponce(result1[0]);
+        HeWeather.getAir(WeatherActivity.this, weatherId, new HeWeather.OnResultAirBeanListener() {
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WeatherActivity.this,"获取天气信息失败",
+                                Toast.LENGTH_SHORT).show();
+                        swipeRefresh.setRefreshing(false);
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess(Air air) {
+                if (Code.OK.getCode().equalsIgnoreCase(air.getStatus()))
+                    responce2[0] = air;
+                else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(WeatherActivity.this, "获取天气信息失败",
+                                    Toast.LENGTH_SHORT).show();
+                            swipeRefresh.setRefreshing(false);
+                        }
+                    });
+                }
+            }
+        });
+        if(Code.OK.getCode().equalsIgnoreCase(responce1[0].getStatus())){
+            final Weather weather = Utility.newhandleWeatherResponce(responce1[0],responce2[0]);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

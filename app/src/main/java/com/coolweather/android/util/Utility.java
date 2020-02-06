@@ -12,6 +12,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import interfaces.heweather.com.interfacesmodule.bean.air.Air;
+
 public class Utility {
     public static boolean handleProvinceResponse(String response){
         //解析省级数据
@@ -86,15 +88,16 @@ public class Utility {
         }
         return null;
     }
-    public static Weather newhandleWeatherResponce(interfaces.heweather.com.interfacesmodule.bean.weather.Weather responce){
+    public static Weather newhandleWeatherResponce(interfaces.heweather.com.interfacesmodule.bean.weather.Weather responce1, Air responce2){
         Weather weather = new Weather();
-        weather.status = responce.getStatus();
-        weather.basic.cityName = responce.getBasic().getLocation();
-        weather.basic.weatherId = responce.getBasic().getCid();
-        weather.basic.update.updateTime = responce.getUpdate().getLoc();
-        weather.now.temperature = responce.getNow().getTmp();
-        weather.now.more.info = responce.getNow().getCond_txt();
-
+        weather.status = responce1.getStatus();
+        weather.basic.cityName = responce1.getBasic().getLocation();
+        weather.basic.weatherId = responce1.getBasic().getCid();
+        weather.basic.update.updateTime = responce1.getUpdate().getLoc();
+        weather.now.temperature = responce1.getNow().getTmp();
+        weather.now.more.info = responce1.getNow().getCond_txt();
+        weather.aqi.city.aqi = responce2.getAir_now_city().getAqi();
+        weather.aqi.city.pm25 = responce2.getAir_now_city().getPm25();
         return weather;
     }
 }
