@@ -28,9 +28,14 @@ import com.coolweather.android.util.HttpUtil;
 import com.coolweather.android.util.Utility;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import interfaces.heweather.com.interfacesmodule.bean.Code;
 import interfaces.heweather.com.interfacesmodule.bean.air.Air;
+import interfaces.heweather.com.interfacesmodule.bean.air.forecast.AirForecast;
+import interfaces.heweather.com.interfacesmodule.bean.weather.forecast.ForecastBase;
+import interfaces.heweather.com.interfacesmodule.bean.weather.lifestyle.Lifestyle;
 import interfaces.heweather.com.interfacesmodule.view.HeWeather;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -112,6 +117,8 @@ public class WeatherActivity extends AppCompatActivity {
     public void requestWeather(final String weatherId){
         final interfaces.heweather.com.interfacesmodule.bean.weather.Weather[] responce1 = new interfaces.heweather.com.interfacesmodule.bean.weather.Weather[1];
         final Air[] responce2 = new Air[1];
+        final List<ForecastBase> responce3 = new ArrayList<>();//可以优化
+        final Lifestyle[] responce4 = new Lifestyle[1];
         HeWeather.getWeather(WeatherActivity.this, weatherId, new HeWeather.OnResultWeatherDataListBeansListener() {
             @Override
             public void onError(Throwable throwable) {
@@ -171,9 +178,69 @@ public class WeatherActivity extends AppCompatActivity {
                     });
                 }
             }
+        });;
+        HeWeather.getWeatherForecast(WeatherActivity.this, weatherId, new HeWeather.OnResultWeatherForecastBeanListener() {
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WeatherActivity.this,"获取天气信息失败",
+                                Toast.LENGTH_SHORT).show();
+                        swipeRefresh.setRefreshing(false);
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess(interfaces.heweather.com.interfacesmodule.bean.weather.forecast.Forecast forecast) {
+                if (Code.OK.getCode().equalsIgnoreCase(forecast.getStatus()))
+                    responce3.addAll(forecast.getDaily_forecast());
+                else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(WeatherActivity.this, "获取天气信息失败",
+                                    Toast.LENGTH_SHORT).show();
+                            swipeRefresh.setRefreshing(false);
+                        }
+                    });
+                }
+            }
         });
-        if(Code.OK.getCode().equalsIgnoreCase(responce1[0].getStatus())){
-            final Weather weather = Utility.newhandleWeatherResponce(responce1[0],responce2[0]);
+        HeWeather.getWeatherLifeStyle(WeatherActivity.this, weatherId, new HeWeather.OnResultWeatherLifeStyleBeanListener() {
+            @Override
+            public void onError(Throwable throwable) {
+                throwable.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WeatherActivity.this,"获取天气信息失败",
+                                Toast.LENGTH_SHORT).show();
+                        swipeRefresh.setRefreshing(false);
+                    }
+                });
+            }
+
+            @Override
+            public void onSuccess(Lifestyle lifestyle) {
+                if (Code.OK.getCode().equalsIgnoreCase(lifestyle.getStatus()))
+                    responce4[0] = lifestyle;
+                else{
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(WeatherActivity.this, "获取天气信息失败",
+                                    Toast.LENGTH_SHORT).show();
+                            swipeRefresh.setRefreshing(false);
+                        }
+                    });
+                }
+            }
+        });
+        if(responce1[0].getStatus().equals("ok")){//这里可能会出bug
+            final Weather weather = Utility.newhandleWeatherResponce(responce1[0],responce2[0],responce3,responce4[0]);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
